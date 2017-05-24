@@ -55,7 +55,7 @@ class App extends Component {
             })}
           </Layer>
         </Stage>
-        <img ref="preview" src={this.state.image} style={ {width: '100%' }} />
+        <img ref="preview" style={ {width: '100%' }} />
       </div>
     );
   }
