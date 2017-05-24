@@ -9,15 +9,11 @@ const SEATS_PER_ROW = 100;
 const NUMBER_FONT_SIZE = 12;
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { image: null }
-  }
   componentDidMount() {
-    this.refs.preview.src = this.refs.svg.toDataURL('image/png');
+    this.refs.preview.src = this.refs.svg.toDataURL();
   }
   componentDidUpdate() {
-    this.refs.preview.src = this.refs.svg.toDataURL('image/png');
+    this.refs.preview.src = this.refs.svg.toDataURL();
   }
   render() {
     return (
@@ -40,14 +36,12 @@ class App extends Component {
                     width={SEAT_SIZE}
                     height={SEAT_SIZE}
                     fill={seat.available ? "#00FF00" : "#FF0000"}
-                    shadowBlur={10}
                     onClick={this.handleClick}
                   />
                   <Text
                     text={`${row + 1}:${col + 1}`}
                     align="center"
                     width={SEAT_SIZE}
-                    lineHeight={SEAT_SIZE}
                     y={(SEAT_SIZE / 2) - (NUMBER_FONT_SIZE / 2)}
                   />
                 </Group>
@@ -55,7 +49,19 @@ class App extends Component {
             })}
           </Layer>
         </Stage>
-        <img ref="preview" style={ {width: '100%' }} />
+        <div style={{position: 'fixed', bottom: 0, left: 0}}>
+          <img ref="preview" style={{ width: '100%'}} />
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            height: '100px',
+            width: '100px',
+            borderWidth: '1px',
+            borderColor: '#000000',
+            zIndex: 10000,
+          }} />
+        </div>
       </div>
     );
   }
