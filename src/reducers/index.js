@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux'
-import seats from './seats'
+import sector from './sector'
 
 export default combineReducers({
-  seats,
+  sector,
 });

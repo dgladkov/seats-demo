@@ -1,36 +1,37 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {Layer, Rect, Stage, Group, Text} from 'react-konva';
-import { toggleSeatAvailability } from './actions/seats';
+import { rotateSector90, rotateSector180, toggleSeatAvailability } from './actions/sector';
 
 const SEAT_SIZE = 50;
 const SEAT_SPACING = 10;
-const SEATS_PER_ROW = 100;
 const NUMBER_FONT_SIZE = 12;
 
 class App extends Component {
   componentDidMount() {
-    this.refs.preview.src = this.refs.svg.toDataURL();
+    this.refs.preview.src = this.refs.canvas.toDataURL();
   }
   componentDidUpdate() {
-    this.refs.preview.src = this.refs.svg.toDataURL();
+    this.refs.preview.src = this.refs.canvas.toDataURL();
   }
   render() {
     return (
       <div>
+        <button onClick={this.props.rotateSector90}>Rotate 90</button>
+        <button onClick={this.props.rotateSector180}>Rotate 180</button>
         <Stage
-          width={(SEAT_SIZE + SEAT_SPACING) * SEATS_PER_ROW + SEAT_SPACING}
-          height={Math.ceil(this.props.seats.length / SEATS_PER_ROW) * (SEAT_SIZE + SEAT_SPACING) + SEAT_SPACING}>
-          <Layer ref="svg">
+          width={(SEAT_SIZE + SEAT_SPACING) * this.props.seatsPerRow + SEAT_SPACING}
+          height={Math.ceil(this.props.seats.length / this.props.seatsPerRow) * (SEAT_SIZE + SEAT_SPACING) + SEAT_SPACING}>
+          <Layer ref="canvas">
             {this.props.seats.map((seat, index) => {
-              const row = Math.floor(index / SEATS_PER_ROW);
-              const col = index % SEATS_PER_ROW;
+              const row = Math.floor(index / this.props.seatsPerRow);
+              const col = index % this.props.seatsPerRow;
               return (
                 <Group
-                  key={index}
+                  key={seat.id}
                   x={(SEAT_SIZE + SEAT_SPACING) * col + SEAT_SPACING}
                   y={row * (SEAT_SIZE + SEAT_SPACING) + SEAT_SPACING}
-                  onClick={() => this.props.toggleSeatAvailability(index)}
+                  onClick={() => this.props.toggleSeatAvailability(seat.id)}
                 >
                   <Rect
                     width={SEAT_SIZE}
@@ -39,7 +40,7 @@ class App extends Component {
                     onClick={this.handleClick}
                   />
                   <Text
-                    text={`${row + 1}:${col + 1}`}
+                    text={`${seat.row}:${seat.column}`}
                     align="center"
                     width={SEAT_SIZE}
                     y={(SEAT_SIZE / 2) - (NUMBER_FONT_SIZE / 2)}
@@ -49,32 +50,27 @@ class App extends Component {
             })}
           </Layer>
         </Stage>
-        <div style={{position: 'fixed', bottom: 0, left: 0}}>
+        <div>
+        </div>
+        <div>
           <img ref="preview" style={{ width: '100%'}} />
-          <div style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            height: '100px',
-            width: '100px',
-            borderWidth: '1px',
-            borderColor: '#000000',
-            zIndex: 10000,
-          }} />
         </div>
       </div>
     );
   }
 }
 
-function mapStateToProps({ seats }) {
+function mapStateToProps({ sector }) {
   return {
-    seats,
+    seats: sector.order.map(id => sector.seats.get(id)),
+    seatsPerRow: sector.seatsPerRow,
   };
 };
 
 const mapDispatchToProps = {
   toggleSeatAvailability,
+  rotateSector90,
+  rotateSector180,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);
